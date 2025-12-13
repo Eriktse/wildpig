@@ -94,6 +94,6 @@ export const genMetaRoutes = async () => {
     for(const route in routeScripts) {
         text += `    "${route}": require("${routeScripts[route]}").getMeta, \n`;
     }
-    text += "}";
+    text += "},";
     writeFileSync("./build/built-meta-routes.ts", text);
 }
