@@ -59,7 +59,7 @@ export const genRoutes = async () => {
         text += `POST: (req: any) => middleware(req, require("${routeScripts[route]}").POST), \n`;
         text += `PUT: (req: any) => middleware(req, require("${routeScripts[route]}").PUT), \n`;
         text += `DELETE: (req: any) => middleware(req, require("${routeScripts[route]}").DELETE), \n`;
-        text += `}\n`;
+        text += `},\n`;
     }
     text += "}";
     writeFileSync("./build/built-routes.ts", text);
@@ -94,6 +94,6 @@ export const genMetaRoutes = async () => {
     for(const route in routeScripts) {
         text += `    "${route}": require("${routeScripts[route]}").getMeta, \n`;
     }
-    text += "},";
+    text += "}";
     writeFileSync("./build/built-meta-routes.ts", text);
 }
