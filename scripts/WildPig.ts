@@ -24,14 +24,14 @@ export const startServer = () => {
             "/*": async (request) => {
                 const url = "/" + (request.url.split("/")[3] || "");
                 // console.log("url:", url);
-                const pathname = "/_kire_meta_api" + url.split("?")[0];
+                const pathname = "/_WILDPIG_META_API" + url.split("?")[0];
                 let meta: {title: string} | null = null;
 
                 if(pathname in metaRoutes){
                     const metaRes = await metaRoutes[pathname]();
                     meta = await metaRes.json();
                 }
-                return new Response(htmlString.replace("{{TITLE}}", meta?.title || "Kire"), {
+                return new Response(htmlString.replace("{{TITLE}}", meta?.title || "WildPig"), {
                     headers: {
                         "content-type": "text/html; charset=utf-8",
                         "Access-Control-Allow-Origin": "*",

@@ -4,7 +4,7 @@
 
 export const GET = (req: Request) => {
     return Response.json({
-        message: "hello world",
+        message: "hello get",
     })
 }
 

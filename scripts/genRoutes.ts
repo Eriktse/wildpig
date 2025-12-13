@@ -80,7 +80,7 @@ export const scanMetaRoutes = () => {
         const { getMeta } = require(filepath);
         if( getMeta ) {
             let route = filepath.replace("#/src/page", "").replace("/meta.ts", "");
-            route = "/_kire_meta_api" + (route || "/");
+            route = "/_WILDPIG_META_API" + (route || "/");
             routes[route] = getMeta;
             routeScripts[route] = filepath;
         }

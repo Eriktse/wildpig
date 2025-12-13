@@ -1,4 +1,4 @@
 export default {
-    "/_kire_meta_api/home": require("#/src/page/home/meta.ts").getMeta, 
-    "/_kire_meta_api/": require("#/src/page/meta.ts").getMeta, 
+    "/_WILDPIG_META_API/home": require("#/src/page/home/meta.ts").getMeta, 
+    "/_WILDPIG_META_API/": require("#/src/page/meta.ts").getMeta, 
 }

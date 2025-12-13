@@ -1,6 +1,8 @@
 import { genMetaRoutes, genRoutes } from "./genRoutes";
 import { packageStatic } from "./packageStatic";
 
-await packageStatic();
-await genRoutes();
-await genMetaRoutes();
+export const prebuild = async () => {
+    await packageStatic();
+    await genRoutes();
+    await genMetaRoutes();
+}
