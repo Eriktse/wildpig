@@ -1,0 +1,33 @@
+{
+  "version": "1.0.1",
+  "scripts": {
+    "dev": "export NODE_ENV=development && bun --hot run index.ts",
+    "prebuild": "bun run scripts/prebuild.ts",
+    "build": "export NODE_ENV=production && bun run prebuild && bun build --compile ./index.ts --outfile dist/kire",
+    "build-linux": "export NODE_ENV=production && bun build --compile --target=bun-linux-x64-musl ./index.ts --outfile dist/kire",
+    "start": "cd dist && ./kire",
+    "docker:build": "bun run build-linux && docker build -t kire .",
+    "docker:run": "docker run -itd -p 3000:3000 kire"
+  },
+  "dependencies": {
+    "@react-router/dev": "^7.10.1",
+    "@types/bun": "^1.3.4",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "antd": "^6.1.0",
+    "chalk": "^5.6.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "name": "wildpig",
+  "description": "A strong and fast fullstack framework base Bun.",
+  "main": "index.ts",
+  "devDependencies": {},
+  "keywords": [
+    "fullstack",
+    "web",
+    "framework"
+  ],
+  "author": "eriktse",
+  "license": "ISC"
+}
