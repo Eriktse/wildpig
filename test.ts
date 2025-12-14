@@ -1,3 +1,3 @@
 import { startServer } from "./scripts/WildPig";
 
-export { startServer };
+startServer();

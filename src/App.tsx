@@ -1,8 +1,6 @@
 import { RouterProvider } from "react-router";
 import { browserRouter } from "./router";
-import { RouterGuard } from "./router/guard";
-RouterGuard();
+import { RouterMetaGuard } from "#/router/MetaGuard";
 
 
-
-export const App = () => <RouterProvider router={browserRouter} />;
+export const App = () => <RouterProvider router={RouterMetaGuard(browserRouter)} />;
