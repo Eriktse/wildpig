@@ -7,8 +7,7 @@ import devIndexHtml from "#/public/devIndex.html"
 const env = process.env;
 const isDev = env.NODE_ENV === "development";
 
-console.log(metaRoutes);
-
+// console.log(metaRoutes);
 
 export const startServer = () => {
     Bun.serve({
@@ -22,9 +21,8 @@ export const startServer = () => {
                     "content-type": "image/x-icon",
                 }
             }),
-            "/render.js": () => new Response((readFileSync("./public/render.js.br")), {
+            "/render.js": () => new Response((readFileSync("./public/render.js")), {
                 headers: {
-                    "Content-Encoding": "br",
                     "Content-Type": "text/javascript; charset=utf-8",
                     "Cache-Control": isDev ? "no-cache" : "public, max-age=31536000, immutable"
                 }
@@ -64,7 +62,7 @@ console.log(` __        __ _  _      _   ____   _
    \\ V  V /  | || || (_| | |  __/ | || (_| |
     \\_/\\_/   |_||_| \\__,_| |_|    |_| \\__, |
                                       |___/ `)
-    console.log(chalk.blue.bgGreen("         🐗 WildPig version 1.0.11 by eriktse       "));
+    console.log(chalk.blue.bgGreen("         🐗 WildPig version 1.1.6 by eriktse       "));
     console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
     console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
     if(isDev){

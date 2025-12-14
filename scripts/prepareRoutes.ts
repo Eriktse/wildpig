@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { scanMetaRoutes, scanRoutes } from "./genRoutes";
-import { brotliCompressSync } from "node:zlib";
+import { gzipSync } from "bun";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -16,10 +16,9 @@ if(isDev){
     await Bun.build({
         entrypoints: ["./public/render.tsx"],
         outdir: "./public",
-        format: "esm"
+        format: "esm",
+        minify: true,
     });
-    // 将 ./public/render.js 转为 ./public/render.br
-    writeFileSync("./public/render.js.br", brotliCompressSync(Buffer.from(readFileSync("./public/render.js"))));
 
 }else{
     routes = require("#/build/built-routes.ts").default;

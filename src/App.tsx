@@ -1,4 +1,4 @@
-import { RouterProvider } from "#/router/react-router";
+import { RouterProvider } from "react-router";
 import { browserRouter } from "./router";
 import { RouterMetaGuard } from "#/router/MetaGuard";
 
