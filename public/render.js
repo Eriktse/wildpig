@@ -22349,21 +22349,8 @@ function useViewTransitionState(to, { relative } = {}) {
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
 var MainLayout = () => {
   return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-    children: [
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("input", {
-        type: "text",
-        placeholder: "Search"
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
-        children: "Search"
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-        className: "text-red-500",
-        children: "红红红"
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV(Outlet, {}, undefined, false, undefined, this)
-    ]
-  }, undefined, true, undefined, this);
+    children: /* @__PURE__ */ jsx_dev_runtime.jsxDEV(Outlet, {}, undefined, false, undefined, this)
+  }, undefined, false, undefined, this);
 };
 
 // src/router/index.tsx
