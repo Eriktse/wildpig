@@ -22344,7 +22344,6 @@ function useViewTransitionState(to, { relative } = {}) {
 
 // node_modules/react-router/dist/development/index.mjs
 "use client";
-
 // src/page/layout.tsx
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
 var MainLayout = () => {
