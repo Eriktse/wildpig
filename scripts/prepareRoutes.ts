@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 // 准备服务端路由表
 let routes = {};
-let metaRoutes: Record<string, () => Promise<Response>> = {};
+let metaRoutes: Record<string, (req: Request) => Promise<Response>> = {};
 if(isDev){
     // 引入，用于监听
     setTimeout(() => import("@/App").catch(() => {}), 1000);

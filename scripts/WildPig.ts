@@ -7,6 +7,8 @@ import devIndexHtml from "#/public/devIndex.html"
 const env = process.env;
 const isDev = env.NODE_ENV === "development";
 
+console.log(metaRoutes);
+
 
 export const startServer = () => {
     Bun.serve({
@@ -27,17 +29,25 @@ export const startServer = () => {
                     "Cache-Control": isDev ? "no-cache" : "public, max-age=31536000, immutable"
                 }
             }),
-            "/*": isDev ? devIndexHtml : async (request) => {
-                const url = "/" + (request.url.split("/")[3] || "");
-                // console.log("url:", url);
-                const pathname = "/_WILDPIG_META_API" + url.split("?")[0];
-                let meta: {title: string} | null = null;
+            "/*":
+            isDev ? devIndexHtml : 
+            async (request: Request) => {
+                const pathname = "/_WILDPIG_META_API/" + (request.url.split("/")[3].split("?")[0] || "");
+                let resHtml = htmlString;
 
                 if(pathname in metaRoutes){
-                    const metaRes = await metaRoutes[pathname]();
-                    meta = await metaRes.json();
+                    try{
+                        const metaResponse = await metaRoutes[pathname](request);
+                        const meta = await metaResponse.json();
+                        if(meta.title)resHtml = resHtml.replace("{{TITLE}}", meta.title);
+                        if(meta.description)resHtml = resHtml.replace("{{DESCRIPTION}}", meta.description);
+                        if(meta.keywords)resHtml = resHtml.replace("{{KEYWORDS}}", meta.keywords.join(", "));
+                    }catch(e){
+                        console.error("获取meta信息失败，请检查是否设置了meta信息", e);
+                    }
                 }
-                return new Response(htmlString.replace("{{TITLE}}", meta?.title || "WildPig"), {
+
+                return new Response(resHtml, {
                     headers: {
                         "content-type": "text/html; charset=utf-8",
                         "Access-Control-Allow-Origin": "*",
