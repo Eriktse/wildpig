@@ -2,15 +2,20 @@
 
 
 
-export const GET = (req: Request) => {
+const GET = (req: Request) => {
     return Response.json({
-        message: "hello get",
+        message: "hello get123",
     })
 }
 
 
-export const POST = async (req: Request) => {
+const POST = async (req: Request) => {
     return Response.json({
         message: "hello post",
     })
+}
+
+export default {
+    GET,
+    POST
 }

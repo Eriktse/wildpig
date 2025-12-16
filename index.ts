@@ -1,3 +1,1 @@
-import { startServer } from "./scripts/WildPig";
-
-export { startServer };
+export { startServer } from "./scripts/WildPig";
