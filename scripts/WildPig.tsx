@@ -1,11 +1,14 @@
 import chalk from "chalk";
 // import { routes, metaRoutes } from "./prepareRoutes";
 import { readFileSync } from "node:fs";
-import {getApiRouteModules} from "./apiRoutes";
+import { getApiRouteModules } from "./apiRoutes";
 import { renderToReadableStream } from "react-dom/server";
+import devHtml from "../public/devHtml.html"
 
 import { createStaticHandler, createStaticRouter, matchRoutes } from "react-router";
 
+
+// 用户代码
 import pageRoutes from "#/src/router/routes";
 import { App } from "@/App"
 
@@ -15,6 +18,7 @@ const isDev = env.NODE_ENV === "development";
 const apiModules = await getApiRouteModules(isDev ? "dev" : "prod") as any;
 
 if(isDev){
+    setTimeout(() => {import("../public/render")}, 0);
     /** 打包js */
     await Bun.build({
         entrypoints: ["./public/render.tsx"],
@@ -23,9 +27,6 @@ if(isDev){
         minify: false,
     });
 }
-
-
-
 
 
 export const startServer = () => {
@@ -45,7 +46,7 @@ export const startServer = () => {
                     "Cache-Control": isDev ? "no-cache" : "public, max-age=31536000, immutable"
                 }
             }),
-            "/*": async (request: Request) => {
+            "/*": isDev ? devHtml : async (request: Request) => {
                 // 判断pathname是否匹配pageRoutes
                 const url = new URL(request.url);
                 const matches = matchRoutes(pageRoutes, url.pathname);

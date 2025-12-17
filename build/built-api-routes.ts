@@ -1,6 +1,18 @@
-import r1 from "#/src/api/hello/index";
-import r2 from "#/src/api/server-data/hello/index";
+import { middleware } from "@/middleware" 
+import {
+	GET as GET1,
+	POST as POST1,
+} from "#/src/api/hello/index";
+import {
+	GET as GET2,
+} from "#/src/api/server-data/hello/index";
+
 export default {
-	"/api/hello": r1,
-	"/api/server-data/hello": r2,
+	"/api/hello": {
+		GET: (req: any) => middleware(req, GET1),
+		POST: (req: any) => middleware(req, POST1),
+	},
+	"/api/server-data/hello": {
+		GET: (req: any) => middleware(req, GET2),
+	},
 }

@@ -1,4 +1,5 @@
 import { readdirSync, statSync, writeFileSync } from "fs";
+import { middleware } from "@/middleware";
 
 const getFilePaths = (dir: string) => {
     const res: string[] = [];
@@ -36,19 +37,31 @@ export const makeApiRoutePathObj = () => {
 export const packageApiRoutes = async () => {
     const apiRoutes = makeApiRoutePathObj();
     let identId = 0;
-    let importsText = "";
+    let importsText = `import { middleware } from "@/middleware" \n`;
     let routesText = "export default {\n";
     for(const route of Object.keys(apiRoutes)) {
         const importPath = apiRoutes[route];
-
         // 尝试从文件中获取路由
+        const module = await import(importPath);
+        // 没有接口，就跳过
+        if(!module.GET && !module.POST) continue;
+        // 标识id
         identId ++;
-        const moduleName = `r${identId}`;
-        importsText += `import ${moduleName} from "${importPath.replace(".ts", "")}";\n`;
-        routesText += `\t"${route}": ${moduleName},\n`
+        importsText += `import {\n`;
+        routesText += `\t"${route}": {\n`;
+        if(module.GET) {
+            importsText += `\tGET as GET${identId},\n`;
+            routesText += `\t\tGET: (req: any) => middleware(req, GET${identId}),\n`;
+        }
+        if(module.POST) {
+            importsText += `\tPOST as POST${identId},\n`;
+            routesText += `\t\tPOST: (req: any) => middleware(req, POST${identId}),\n`;
+        }
+        importsText += `} from "${importPath}";\n`;
+        routesText += `\t},\n`;
     }
     routesText += "}";
-    writeFileSync("./build/built-api-routes.ts", importsText + routesText);
+    writeFileSync("./build/built-api-routes.ts", importsText + "\n" + routesText);
 };
 
 /**
@@ -57,15 +70,24 @@ export const packageApiRoutes = async () => {
 export const getApiRouteModules = async (mode: "dev" | "prod") => {
     if(mode === "dev"){
         const apiRoutes = makeApiRoutePathObj();
-        const result: Record<string, any> = {};
+        const result: Record<string, {
+            GET?: (req: any) => Promise<Response>,
+            POST?: (req: any) => Promise<Response>
+        } > = {};
         for(const route of Object.keys(apiRoutes)) {
             const importPath = apiRoutes[route];
             const module = await import(importPath.replace(".ts", ""));
-            result[route] = module.default;
+            if(!module.GET && !module.POST) continue;
+
+            // 新建一个路由
+            result[route] = {};
+            if(module.GET) result[route].GET = (req: any) => middleware(req, module.GET);
+            if(module.POST) result[route].POST = (req: any) => middleware(req, module.POST);
         }
         return result;
     } else {
-        const module = await import("#/build/built-api-routes");
+        // prod模式，直接从文件中导入
+        const module = await import("../build/built-api-routes"!);
         return module.default;
     }
 }

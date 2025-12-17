@@ -23,7 +23,7 @@
   ],
   "license": "ISC",
   "scripts": {
-    "dev": "export NODE_ENV=development && bun run --hot test.ts",
+    "dev": "export NODE_ENV=development && bun run --no-cache --hot test.ts",
     "prebuild": "bun run scripts/run-prebuild.ts",
     "build": "bun run prebuild && bun build --production --compile ./test.ts --outfile dist/wildpig",
     "build-linux-musl": "export NODE_ENV=production && bun build --compile --target=bun-linux-x64-musl ./test.ts --outfile dist/wildpig",

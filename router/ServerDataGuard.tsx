@@ -1,0 +1,34 @@
+import { useEffect } from "react"
+import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
+import pageRoutes from "@/router/routes";
+import { serverDataStore } from "#/store/serverDataStore";
+
+export const ServerDataGuard = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    useEffect(() => {
+        // serverData清空
+        serverDataStore.set(undefined);
+
+        const url = location.pathname;
+        const matches = matchRoutes(pageRoutes, url);
+        const lastMatch = matches?.at(-1);
+        if(!lastMatch) {
+            // 404
+            navigate("/404");
+            return;
+        }
+        // 成功匹配
+        const serverDataApi = lastMatch.route.serverDataApi;
+        if(!serverDataApi)return;
+
+        fetch(serverDataApi).then(res => res.json()).then(data => {
+            serverDataStore.set(data);
+            if(data.title){
+                document.title = data.title;
+            }
+        });
+    }, [location]);
+
+    return <Outlet />;
+}

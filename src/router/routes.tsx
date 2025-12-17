@@ -1,13 +1,7 @@
+import { WildPigRouteObject } from "#/router/types";
 import { Index } from "@/page";
 import { Home } from "@/page/home";
 import { MainLayout } from "@/page/layout";
-import { RouteObject } from "react-router";
-
-type WildPigRouteObject = RouteObject & {
-    // 是否需要登录
-    serverDataApi?: string;
-    children?: WildPigRouteObject[];
-}
 
 export default [
     {
@@ -23,6 +17,7 @@ export default [
     },
     {
         path: "/home",
-        Component: Home
+        Component: Home,
+        serverDataApi: "/api/server-data/home"
     }
 ] as WildPigRouteObject[];

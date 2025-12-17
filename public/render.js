@@ -28013,7 +28013,7 @@ function listenKeys($store, keys, listener) {
     }
   });
 }
-// src/serverData.tsx
+// store/serverDataStore.tsx
 var serverDataStore = atom(undefined);
 
 // node_modules/@nanostores/react/index.js
@@ -28042,7 +28042,7 @@ function Index() {
   const serverData = useStore(serverDataStore);
   const navigate = useNavigate();
   import_react3.useEffect(() => {
-    console.log("serverData", serverData);
+    console.log("index serverData", serverData);
   }, [serverData]);
   return /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
     children: [
@@ -28053,6 +28053,7 @@ function Index() {
       }, undefined, false, undefined, this),
       /* @__PURE__ */ jsx_dev_runtime.jsxDEV("button", {
         onClick: () => navigate("/home"),
+        className: "bg-blue-500 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-600 duration-300",
         children: "go home"
       }, undefined, false, undefined, this)
     ]
@@ -28093,18 +28094,63 @@ var routes_default = [
   },
   {
     path: "/home",
-    Component: Home
+    Component: Home,
+    serverDataApi: "/api/server-data/home"
   }
 ];
 
-// public/render.tsx
+// router/ServerDataGuard.tsx
+var import_react4 = __toESM(require_react(), 1);
 var jsx_dev_runtime4 = __toESM(require_jsx_dev_runtime(), 1);
-document.addEventListener("DOMContentLoaded", () => {
+var ServerDataGuard = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  import_react4.useEffect(() => {
+    serverDataStore.set(undefined);
+    const url = location.pathname;
+    const matches = matchRoutes(routes_default, url);
+    const lastMatch = matches?.at(-1);
+    if (!lastMatch) {
+      navigate("/404");
+      return;
+    }
+    const serverDataApi = lastMatch.route.serverDataApi;
+    if (!serverDataApi)
+      return;
+    fetch(serverDataApi).then((res) => res.json()).then((data2) => {
+      serverDataStore.set(data2);
+      if (data2.title) {
+        document.title = data2.title;
+      }
+    });
+  }, [location]);
+  return /* @__PURE__ */ jsx_dev_runtime4.jsxDEV(Outlet, {}, undefined, false, undefined, this);
+};
+
+// router/index.ts
+var browserRouter = createBrowserRouter([
+  {
+    path: "/",
+    Component: ServerDataGuard,
+    children: routes_default
+  }
+]);
+
+// public/render.tsx
+var jsx_dev_runtime5 = __toESM(require_jsx_dev_runtime(), 1);
+var isDev = true;
+document?.addEventListener("DOMContentLoaded", () => {
   const rootElement = document.getElementById("root");
   const serverData = window.__SERVER_DATA__;
   serverDataStore.set(serverData);
-  const browserRouter = createBrowserRouter(routes_default);
-  import_client.hydrateRoot(rootElement, /* @__PURE__ */ jsx_dev_runtime4.jsxDEV(RouterProvider, {
-    router: browserRouter
-  }, undefined, false, undefined, this));
+  if (isDev) {
+    const root = import_client.createRoot(rootElement);
+    root.render(/* @__PURE__ */ jsx_dev_runtime5.jsxDEV(RouterProvider, {
+      router: browserRouter
+    }, undefined, false, undefined, this));
+  } else {
+    import_client.hydrateRoot(rootElement, /* @__PURE__ */ jsx_dev_runtime5.jsxDEV(RouterProvider, {
+      router: browserRouter
+    }, undefined, false, undefined, this));
+  }
 });
