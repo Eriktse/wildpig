@@ -15,3 +15,7 @@
 * 服务端路由根据文件路径自动生成。
 
 * 前端开发热重载。
+
+# 启动项目
+
+https://github.com/Eriktse/wildpig-starter

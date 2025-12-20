@@ -16,7 +16,7 @@ import path from "node:path";
 
 const env = process.env;
 const port = env.PORT || 3000;
-const hostname = env.HOSTNAME || "localhost";
+const hostname = env.HOST || env.HOSTNAME || "localhost";
 const isDev = env.NODE_ENV === "development";
 
 
@@ -76,13 +76,23 @@ export const startServer = async () => {
                 let serverDataApi = matchRoute.route.serverDataApi;
                 const getServerData = async () => {
                     if(!serverDataApi)return undefined;
+                    const prefixUrl = request.url.split("/")[0] + "//" + request.url.split("/")[2];
                     // 需要请求服务端数据， 替换动态参数
                     for(const [key, value] of Object.entries(matchRoute.params)){
                         if(value)serverDataApi = serverDataApi.replace(":" + key, value);
                     }
+                    // 加上当前request的query参数
+                    for(const [key, value] of new URLSearchParams(request.url.split("?")[1]).entries()){
+                        if(serverDataApi.includes(key + "="))continue; // 已经有这个参数了
+                        serverDataApi += (serverDataApi.includes("?") ? "&" : "?") + key + "=" + value;
+                    }
+                    const serverRequest = new Request({
+                        ...request.clone(),
+                        url: prefixUrl + serverDataApi, // 替换url
+                    });
+                    serverRequest.headers.set("wildpig-server-data-api", serverDataApi);
                     const pathname = serverDataApi.split("?")[0]; // 获取路径
-                    const handleUrl = "http://" + hostname + ":" + port + pathname;
-                    const serverData = await fetch(handleUrl).then(r => r.json());
+                    const serverData = await apiModules[pathname].GET(serverRequest).then((r: Response) => r.json());
                     return serverData;
                 };
                 let serverData = await getServerData();

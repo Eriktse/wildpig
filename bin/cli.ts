@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 import chalk from "chalk";
 import { build } from "../scripts/build";
 import { spawn } from "bun";
@@ -5,12 +6,16 @@ import fs from "node:fs";
 const command = process.argv[2];
 
 if(command === "start"){
+    // 判断系统平台
+    const platform = process.platform;
+    let serverBin = "./server"; // linux
+    if(platform === "win32")serverBin = "server";
     // 设置一些环境变量
     process.env.NODE_ENV = "production";
     console.log(chalk.green("✨ [Wildpig] Start production server..."));
     const st = performance.now();
     // 启动二进制文件
-    spawn(["server"], {
+    spawn([serverBin], {
         cwd: "./dist",
         stdout: "inherit",
         env: {

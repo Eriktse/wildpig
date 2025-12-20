@@ -13,7 +13,8 @@ export const App = ({router, serverData}: {router: any, serverData?: any}) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{serverDataState?.title || "serverData 缺少 title属性"}</title>
         <style>
-            {`body {
+            {`
+            body {
                 margin: 0;
             }`}
         </style>
