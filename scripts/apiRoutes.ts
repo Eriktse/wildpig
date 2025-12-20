@@ -1,5 +1,5 @@
 import { readdirSync, statSync, writeFileSync } from "fs";
-import { middleware } from "@/middleware";
+import { middleware } from "@/api/middleware";
 
 const getFilePaths = (dir: string) => {
     const res: string[] = [];
@@ -16,8 +16,11 @@ const getFilePaths = (dir: string) => {
     return res;
 }
 
+
+const makeDynamicRoute = (route: string) => route.replaceAll(/\[([^\]]*)\]/g, ':$1');
+
 export const makeApiRoutePathObj = () => {
-    // 扫描路径
+    // 扫描用户代码路径
     const apiDir = "./src/api";
     const apiPaths = getFilePaths(apiDir);
     const result: Record<string, string> = {};
@@ -37,7 +40,7 @@ export const makeApiRoutePathObj = () => {
 export const packageApiRoutes = async () => {
     const apiRoutes = makeApiRoutePathObj();
     let identId = 0;
-    let importsText = `import { middleware } from "@/middleware" \n`;
+    let importsText = `import { middleware } from "@/api/middleware" \n`;
     let routesText = "export default {\n";
     for(const route of Object.keys(apiRoutes)) {
         const importPath = apiRoutes[route];
@@ -48,7 +51,7 @@ export const packageApiRoutes = async () => {
         // 标识id
         identId ++;
         importsText += `import {\n`;
-        routesText += `\t"${route}": {\n`;
+        routesText += `\t"${makeDynamicRoute(route)}": {\n`;
         if(module.GET) {
             importsText += `\tGET as GET${identId},\n`;
             routesText += `\t\tGET: (req: any) => middleware(req, GET${identId}),\n`;
@@ -80,9 +83,11 @@ export const getApiRouteModules = async (mode: "dev" | "prod") => {
             if(!module.GET && !module.POST) continue;
 
             // 新建一个路由
-            result[route] = {};
-            if(module.GET) result[route].GET = (req: any) => middleware(req, module.GET);
-            if(module.POST) result[route].POST = (req: any) => middleware(req, module.POST);
+            const dynamicRoute = makeDynamicRoute(route);
+            console.log(`[apiRoutes] ${dynamicRoute}`)
+            result[dynamicRoute] = {};
+            if(module.GET) result[dynamicRoute].GET = (req: any) => middleware(req, module.GET);
+            if(module.POST) result[dynamicRoute].POST = (req: any) => middleware(req, module.POST);
         }
         return result;
     } else {

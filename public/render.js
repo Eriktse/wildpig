@@ -28016,6 +28016,9 @@ function listenKeys($store, keys, listener) {
 // store/serverDataStore.tsx
 var serverDataStore = atom(undefined);
 
+// router/ServerDataGuard.tsx
+var import_react4 = __toESM(require_react(), 1);
+
 // node_modules/@nanostores/react/index.js
 var import_react = __toESM(require_react(), 1);
 var emit = (snapshotRef, onChange) => (value) => {
@@ -28086,9 +28089,9 @@ var routes_default = [
     Component: MainLayout,
     children: [
       {
-        index: true,
+        path: "/hello/:id",
         Component: Index,
-        serverDataApi: "/api/server-data/hello"
+        serverDataApi: "/api/server-data/hello/:id"
       }
     ]
   },
@@ -28100,7 +28103,6 @@ var routes_default = [
 ];
 
 // router/ServerDataGuard.tsx
-var import_react4 = __toESM(require_react(), 1);
 var jsx_dev_runtime4 = __toESM(require_jsx_dev_runtime(), 1);
 var ServerDataGuard = () => {
   const location = useLocation();
@@ -28114,9 +28116,13 @@ var ServerDataGuard = () => {
       navigate("/404");
       return;
     }
-    const serverDataApi = lastMatch.route.serverDataApi;
+    let serverDataApi = lastMatch.route.serverDataApi;
     if (!serverDataApi)
       return;
+    for (const [key, value] of Object.entries(lastMatch.params)) {
+      if (value)
+        serverDataApi = serverDataApi.replace(":" + key, value);
+    }
     fetch(serverDataApi).then((res) => res.json()).then((data2) => {
       serverDataStore.set(data2);
       if (data2.title) {

@@ -9,9 +9,9 @@ export default [
         Component: MainLayout,
         children: [
             {
-                index: true,
+                path: "/hello/:id",
                 Component: Index,
-                serverDataApi: "/api/server-data/hello"
+                serverDataApi: "/api/server-data/hello/:id"
             }
         ]
     },

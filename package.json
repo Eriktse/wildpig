@@ -1,8 +1,11 @@
 {
   "name": "wildpig",
-  "version": "1.1.6",
+  "version": "1.3.0",
   "author": "eriktse",
   "main": "index.ts",
+  "bin":{
+    "wildpig": "./bin/cli.ts"
+  },
   "dependencies": {
     "@nanostores/react": "^1.0.0",
     "@types/bun": "^1.3.4",
@@ -23,10 +26,8 @@
   ],
   "license": "ISC",
   "scripts": {
-    "dev": "export NODE_ENV=development && bun run --no-cache --hot test.ts",
-    "prebuild": "bun run scripts/run-prebuild.ts",
-    "build": "bun run prebuild && bun build --production --compile ./test.ts --outfile dist/wildpig",
-    "build-linux-musl": "export NODE_ENV=production && bun build --compile --target=bun-linux-x64-musl ./test.ts --outfile dist/wildpig",
-    "start": "cd dist && ./wildpig"
+    "dev": "wildpig dev",
+    "build": "wildpig build",
+    "start": "wildpig start"
   }
 }

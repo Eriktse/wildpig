@@ -8,39 +8,46 @@ import devHtml from "../public/devHtml.html"
 import { createStaticHandler, createStaticRouter, matchRoutes } from "react-router";
 
 
+const __dirname = import.meta.dirname;
+
+
 // 用户代码
 import pageRoutes from "#/src/router/routes";
 import { App } from "@/App"
+import path from "node:path";
 
 const env = process.env;
+const port = env.PORT || 3000;
+const hostname = env.HOSTNAME || "localhost";
 const isDev = env.NODE_ENV === "development";
 
 const apiModules = await getApiRouteModules(isDev ? "dev" : "prod") as any;
+
 
 if(isDev){
     setTimeout(() => {import("../public/render")}, 0);
     /** 打包js */
     await Bun.build({
-        entrypoints: ["./public/render.tsx"],
-        outdir: "./public",
+        entrypoints: [path.resolve(__dirname, "../public/render.tsx")],
+        outdir: path.resolve(__dirname, "../public"),
         format: "esm",
         minify: false,
     });
 }
 
-
-export const startServer = () => {
+export const startServer = async () => {
     Bun.serve({
-        port: env.PORT || 3000,
-        hostname: env.HOST || "0.0.0.0",
+        port,
+        hostname,
         routes:{
             ...apiModules,
+            // 这个来自用户文件
             "/favicon.ico": () => new Response(Bun.file("./public/favicon.ico"), {
                 headers: {
                     "content-type": "image/x-icon",
                 }
             }),
-            "/render.js": () => new Response((readFileSync("./public/render.js")), {
+            "/render.js": () => new Response((readFileSync(path.resolve(__dirname, "../public/render.js"))), {
                 headers: {
                     "Content-Type": "text/javascript; charset=utf-8",
                     "Cache-Control": isDev ? "no-cache" : "public, max-age=31536000, immutable"
@@ -67,7 +74,6 @@ export const startServer = () => {
 
                 // 请求服务端数据
                 const matchRoute = matches.at(-1)!;
-                console.log(matchRoute);
                 let serverDataApi = matchRoute.route.serverDataApi;
                 const getServerData = async () => {
                     if(!serverDataApi)return undefined;
@@ -76,17 +82,11 @@ export const startServer = () => {
                         if(value)serverDataApi = serverDataApi.replace(":" + key, value);
                     }
                     const pathname = serverDataApi.split("?")[0]; // 获取路径
-
-                    const handler = apiModules[pathname];
-                    if(handler){
-                        const serverDataResponse = await handler.GET(request) as Response;
-                        return await serverDataResponse.json();
-                    }else{
-                        console.debug("No handler for pathname: ", pathname);
-                    }
-                }
+                    const handleUrl = "http://" + hostname + ":" + port + pathname;
+                    const serverData = await fetch(handleUrl).then(r => r.json());
+                    return serverData;
+                };
                 let serverData = await getServerData();
-                console.debug("serverData: ", serverData);
 
 
                 const stream = await renderToReadableStream(<App router={router} serverData={serverData} />);
@@ -98,22 +98,7 @@ export const startServer = () => {
                 })
             },
         },
-        development: isDev
+        development: isDev,
+        
     })
-    console.clear();
-console.log(` __        __ _  _      _   ____   _        
- \\ \\      / /(_)| |  __| | |  _ \\ (_)  __ _ 
-  \\ \\ /\\ / / | || | / _\` | | |_) || | / _\` |
-   \\ V  V /  | || || (_| | |  __/ | || (_| |
-    \\_/\\_/   |_||_| \\__,_| |_|    |_| \\__, |
-                                      |___/ `)
-    console.log(chalk.blue.bgGreen("         🐗 WildPig version 1.1.6 by eriktse       "));
-    console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
-    console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
-    if(isDev){
-        console.log(chalk.yellow("💻 Wildpig is Running in development mode."));
-    }else{
-        console.log(chalk.green("💻 Wildpig is Running in production mode."));
-    }
-    console.log(chalk.green("🔗 Click to debug in Browser: http://localhost" + ":" + (env.PORT || 3000)));
 }

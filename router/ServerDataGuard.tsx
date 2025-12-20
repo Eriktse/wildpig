@@ -19,9 +19,13 @@ export const ServerDataGuard = () => {
             return;
         }
         // 成功匹配
-        const serverDataApi = lastMatch.route.serverDataApi;
+        let serverDataApi = lastMatch.route.serverDataApi;
         if(!serverDataApi)return;
 
+        // 替换参数
+        for(const [key, value] of Object.entries(lastMatch.params)){
+            if(value)serverDataApi = serverDataApi.replace(":" + key, value);
+        }
         fetch(serverDataApi).then(res => res.json()).then(data => {
             serverDataStore.set(data);
             if(data.title){

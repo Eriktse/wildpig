@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router";
-import pageRoutes from "@/router/routes";
 import { ServerDataGuard } from "./ServerDataGuard";
+
+// 用户代码
+import pageRoutes from "@/router/routes";
 
 
 /** 生成路由器，可用于监听路由变化 */
