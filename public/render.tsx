@@ -1,8 +1,8 @@
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
-import "./tailwindcss4.js";
 import { serverDataStore } from '../store/serverDataStore';
 import { browserRouter } from '../router/index.js';
+import "./tailwindcss4.js"
 
 const isDev = process.env.NODE_ENV === 'development';
 

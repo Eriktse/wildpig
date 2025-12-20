@@ -14,7 +14,7 @@ export function Index(){
 
     return <div>
         <div>
-            <div>{serverData?.data?.message || "My App"}</div>
+            <div>{serverData?.data?.message || "My App123"}</div>
         </div>
         <button onClick={() => navigate("/home")} className="bg-blue-500 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-blue-600 duration-300">go home</button>
     </div>

@@ -1,6 +1,6 @@
 {
   "name": "wildpig",
-  "version": "1.3.0",
+  "version": "1.3.14",
   "author": "eriktse",
   "main": "index.ts",
   "bin":{

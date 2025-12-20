@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { build } from "../scripts/build";
 import { spawn } from "bun";
+import fs from "node:fs";
 const command = process.argv[2];
 
 if(command === "start"){
@@ -26,7 +27,16 @@ if(command === "start"){
 if(command === "dev"){
     // 设置一些环境变量
     process.env.NODE_ENV = "development";
-    await import("../scripts/server");
+    // 监测是否有node_modules/wildpig
+    const wildpigExist = fs.existsSync("./node_modules/wildpig");
+    const serverPath = wildpigExist ? "./node_modules/wildpig/scripts/server.ts" : "./scripts/server.ts";
+    spawn(["bun", "run", "--hot", serverPath], {
+        cwd: ".",
+        stdout: "inherit",
+        env: {
+            ...process.env
+        }
+    });
 }
 
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
 import pageRoutes from "@/router/routes";
-import { serverDataStore } from "#/store/serverDataStore";
+import { serverDataStore } from "../store/serverDataStore";
 
 export const ServerDataGuard = () => {
     const location = useLocation();

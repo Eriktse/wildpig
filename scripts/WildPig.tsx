@@ -1,5 +1,3 @@
-import chalk from "chalk";
-// import { routes, metaRoutes } from "./prepareRoutes";
 import { readFileSync } from "node:fs";
 import { getApiRouteModules } from "./apiRoutes";
 import { renderToReadableStream } from "react-dom/server";
@@ -21,10 +19,8 @@ const port = env.PORT || 3000;
 const hostname = env.HOSTNAME || "localhost";
 const isDev = env.NODE_ENV === "development";
 
-const apiModules = await getApiRouteModules(isDev ? "dev" : "prod") as any;
 
-
-if(isDev){
+if(false && isDev){
     setTimeout(() => {import("../public/render")}, 0);
     /** 打包js */
     await Bun.build({
@@ -36,7 +32,10 @@ if(isDev){
 }
 
 export const startServer = async () => {
-    Bun.serve({
+
+    // 确保重启后可以重新拿到路由
+    const apiModules = await getApiRouteModules(isDev ? "dev" : "prod") as any;
+    return Bun.serve({
         port,
         hostname,
         routes:{
@@ -47,7 +46,7 @@ export const startServer = async () => {
                     "content-type": "image/x-icon",
                 }
             }),
-            "/render.js": () => new Response((readFileSync(path.resolve(__dirname, "../public/render.js"))), {
+            "/render.js": () => new Response((readFileSync("./public/render.js")), {
                 headers: {
                     "Content-Type": "text/javascript; charset=utf-8",
                     "Cache-Control": isDev ? "no-cache" : "public, max-age=31536000, immutable"

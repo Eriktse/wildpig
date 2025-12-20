@@ -1,4 +1,8 @@
 import { readdirSync, statSync, writeFileSync } from "fs";
+import path from "node:path";
+const __dirname = import.meta.dirname;
+
+
 import { middleware } from "@/api/middleware";
 
 const getFilePaths = (dir: string) => {
@@ -64,7 +68,7 @@ export const packageApiRoutes = async () => {
         routesText += `\t},\n`;
     }
     routesText += "}";
-    writeFileSync("./build/built-api-routes.ts", importsText + "\n" + routesText);
+    writeFileSync(path.resolve(__dirname, "../build/built-api-routes.ts"), importsText + "\n" + routesText);
 };
 
 /**
@@ -84,7 +88,6 @@ export const getApiRouteModules = async (mode: "dev" | "prod") => {
 
             // 新建一个路由
             const dynamicRoute = makeDynamicRoute(route);
-            console.log(`[apiRoutes] ${dynamicRoute}`)
             result[dynamicRoute] = {};
             if(module.GET) result[dynamicRoute].GET = (req: any) => middleware(req, module.GET);
             if(module.POST) result[dynamicRoute].POST = (req: any) => middleware(req, module.POST);
