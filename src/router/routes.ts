@@ -1,12 +1,11 @@
-import { NotFound } from "@/page/404";
-import { Welcome } from "@/page/welcome";
-import { WildPigRouteObject } from "../../router/types";
+import { WildPigRouteObject } from "#/router/types";
+import { Home } from "@/page/Home";
+
 
 
 export default [
     {
-        path: "/",
-        Component: Welcome,
-        serverDataApi: "/api/server-data/welcome?title=hello"
+        path: '/',
+        Component: Home,
     }
 ] as WildPigRouteObject[];

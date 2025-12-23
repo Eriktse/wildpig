@@ -2,10 +2,8 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
 import { serverDataStore } from '../store/serverDataStore';
 import { browserRouter } from '../router/index.js';
-import "./tailwindcss4.js"
 
 const isDev = process.env.NODE_ENV === 'development';
-
 
 // 确保在 DOM 加载完成后才进行水合
 document?.addEventListener("DOMContentLoaded", () => {

@@ -2,6 +2,7 @@ import chalk from "chalk";
 import path from "node:path";
 import { watch } from "node:fs";
 import { startServer } from "./WildPig";
+import viteConfig from "#/vite.config";
 const env = process.env;
 
 
@@ -27,7 +28,7 @@ const startHotServer = async () => {
             setTimeout(async () => {
                 server = await startServer();
                 console.log(chalk.green("服务已重启"));
-            }, 500);
+            }, 1000);
         })
     }
 }
@@ -47,6 +48,7 @@ console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
 console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
 if(isDev){
     console.log(chalk.yellow("💻 Wildpig is Running in development mode."));
+    console.log(chalk.green("⚡ Vite server is running on port " + viteConfig.server?.port));
 }else{
     console.log(chalk.green("💻 Wildpig is Running in production mode."));
 }
