@@ -1,6 +1,6 @@
 import { getApiRouteModules } from "./apiRoutes";
 import { createServer as createViteServer } from "vite";
-import { createStaticHandler, createStaticRouter, matchRoutes } from "react-router";
+import { matchRoutes } from "react-router";
 import fs from "node:fs";
 
 const __dirname = import.meta.dirname;
@@ -33,10 +33,11 @@ const viteHandler = (apiModules: any) => async (request: Request) => {
         viteURL.port = viteServer.config.server.port.toString();
         console.log("转发请求：" + viteURL.toString());
         const response = await fetch(viteURL.toString(), {
-            headers: request.headers,
             method: request.method,
+            headers: request.headers,
+            body: request.body,
         });
-        return response;
+        return response.clone();
     }
 
     const matches = matchRoutes(pageRoutes, url.pathname);

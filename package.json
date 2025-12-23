@@ -1,6 +1,6 @@
 {
   "name": "wildpig",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "eriktse",
   "main": "index.ts",
   "type": "module",
@@ -29,7 +29,6 @@
   ],
   "license": "ISC",
   "scripts": {
-    "publish": "yalc publish",
     "dev": "wildpig dev",
     "build": "wildpig build",
     "start": "wildpig start"
