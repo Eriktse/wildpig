@@ -1,28 +1,22 @@
 import { middleware } from "@/api/middleware" 
 import {
-	POST as POST1,
-} from "#/src/api/add/index";
+	GET as GET1,
+} from "#/src/api/hello/index";
 import {
 	GET as GET2,
-} from "#/src/api/say-hello/index";
+} from "#/src/api/server-data/home/index";
 import {
 	GET as GET3,
-} from "#/src/api/server-data/404/index";
-import {
-	GET as GET4,
-} from "#/src/api/server-data/welcome/index";
+} from "#/src/api/server-data/post/index";
 
 export default {
-	"/api/add": {
-		POST: (req: any) => middleware(req, POST1),
+	"/api/hello": {
+		GET: (req: any) => middleware(req, GET1),
 	},
-	"/api/say-hello": {
+	"/api/server-data/home": {
 		GET: (req: any) => middleware(req, GET2),
 	},
-	"/api/server-data/404": {
+	"/api/server-data/post": {
 		GET: (req: any) => middleware(req, GET3),
-	},
-	"/api/server-data/welcome": {
-		GET: (req: any) => middleware(req, GET4),
 	},
 }

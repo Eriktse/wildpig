@@ -8,8 +8,8 @@ const command = process.argv[2];
 if(command === "start"){
     // 判断系统平台
     const platform = process.platform;
-    let serverBin = "./server"; // linux
-    if(platform === "win32")serverBin = "server";
+    let serverBin = "./prodServer"; // linux
+    if(platform === "win32")serverBin = "prodServer";
     // 设置一些环境变量
     process.env.NODE_ENV = "production";
     console.log(chalk.green("✨ [Wildpig] Start production server..."));
@@ -34,7 +34,7 @@ if(command === "dev"){
     process.env.NODE_ENV = "development";
     // 监测是否有node_modules/wildpig
     const wildpigExist = fs.existsSync("./node_modules/wildpig");
-    const serverPath = wildpigExist ? "./node_modules/wildpig/scripts/server.ts" : "./scripts/server.ts";
+    const serverPath = wildpigExist ? "./node_modules/wildpig/scripts/devServer.ts" : "./scripts/devServer.ts";
     spawn(["bun", "run", "--watch", serverPath], {
         cwd: ".",
         stdout: "inherit",
