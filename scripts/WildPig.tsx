@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { getApiRouteModules } from "./apiRoutes";
 import { createServer as createViteServer } from "vite";
-import viteConfig from "../vite.config";
 import { createStaticHandler, createStaticRouter, matchRoutes } from "react-router";
 
 
@@ -20,7 +19,9 @@ const isDev = env.NODE_ENV === "development";
 let viteServer = null;
 if(isDev){
     // 启动vite server
-    viteServer = await createViteServer(viteConfig);
+    viteServer = await createViteServer({
+        configFile: path.resolve(__dirname, "../vite.config.ts"),
+    });
     await viteServer.listen(5173);
 }
 
@@ -36,7 +37,6 @@ export const startServer = async () => {
 
                 // 如果是开发环境，直接转发给vite server
                 if(isDev){
-                    console.log("请求vite server", request.url);
                     const viteURL = new URL(request.url);
                     viteURL.port = "5173";
                     const response = await fetch(viteURL.toString());

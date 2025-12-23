@@ -35,7 +35,7 @@ if(command === "dev"){
     // 监测是否有node_modules/wildpig
     const wildpigExist = fs.existsSync("./node_modules/wildpig");
     const serverPath = wildpigExist ? "./node_modules/wildpig/scripts/server.ts" : "./scripts/server.ts";
-    spawn(["bun", "run", "--hot", serverPath], {
+    spawn(["bun", "run", "--watch", serverPath], {
         cwd: ".",
         stdout: "inherit",
         env: {
