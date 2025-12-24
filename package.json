@@ -1,8 +1,7 @@
 {
   "name": "wildpig",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "author": "eriktse",
-  "main": "index.ts",
   "type": "module",
   "bin": {
     "wildpig": "./bin/cli.ts"

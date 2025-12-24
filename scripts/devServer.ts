@@ -6,9 +6,9 @@ import fs from "node:fs";
 const __dirname = import.meta.dirname;
 
 // 用户代码
-import pageRoutes from "@/router/routes";
 import path from "node:path";
 import chalk from "chalk";
+import { WildPigRouteObject } from "router/types";
 
 const env = process.env;
 const port = env.PORT || 3000;
@@ -40,6 +40,7 @@ const viteHandler = (apiModules: any) => async (request: Request) => {
         return response.clone();
     }
 
+    const pageRoutes = (await viteServer.ssrLoadModule("@/router/routes.ts"!)).default as WildPigRouteObject[];
     const matches = matchRoutes(pageRoutes, url.pathname);
     if(!matches)return new Response("404 Not Found", { status: 404 });
 

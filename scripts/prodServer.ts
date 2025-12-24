@@ -4,8 +4,9 @@ import { matchRoutes } from "react-router";
 import path from "node:path";
 
 // 用户代码
-import pageRoutes from "#/src/router/routes";
+const pageRoutes = (await import("@/router/routes"!)).default as WildPigRouteObject[];
 import chalk from "chalk";
+import { WildPigRouteObject } from "router/types";
 
 const env = process.env;
 const port = env.PORT || 3000;
@@ -46,8 +47,7 @@ export const startServer = async () => {
             "/*": async (request: Request) => {
                 // 判断pathname是否匹配pageRoutes
                 const url = new URL(request.url);
-                const matches = matchRoutes(pageRoutes, url.pathname);
-                if(!matches){
+                if(url.pathname.includes(".") || url.pathname.startsWith("/@") || url.pathname.startsWith("/assets")){
                     const filepath = "./client" + url.pathname;
                     // 检查文件是否存在
                     if(fs.existsSync(filepath) && fs.statSync(filepath).isFile()){
@@ -58,6 +58,9 @@ export const startServer = async () => {
                 }
 
                 // 请求服务端数据
+                const matches = matchRoutes(pageRoutes, url.pathname);
+                if(!matches)return new Response("Not Found", {status: 404});
+
                 const matchRoute = matches.at(-1)!;
                 let serverDataApi = matchRoute.route.serverDataApi;
                 const getServerData = async () => {

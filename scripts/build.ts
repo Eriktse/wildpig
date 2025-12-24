@@ -6,14 +6,14 @@ const prebuild = async () => {
     const promises = [];
     // 先编译客户端代码
     promises.push(viteBuild({
-        configFile: path.resolve(__dirname, "../vite.config.ts"),
+        configFile: path.resolve(__dirname, "../../../vite.config.ts"),
         build: {
             outDir: "./dist/client",
         },
     }));
     // 编译服务端入口文件
     promises.push(viteBuild({
-        configFile: path.resolve(__dirname, "../vite.config.ts"),
+        configFile: path.resolve(__dirname, "../../../vite.config.ts"),
         
         build: {
             rollupOptions:{
