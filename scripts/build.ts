@@ -14,7 +14,6 @@ const prebuild = async () => {
     // 编译服务端入口文件
     promises.push(viteBuild({
         configFile: path.resolve(__dirname, "../../../vite.config.ts"),
-        
         build: {
             rollupOptions:{
                 input: path.resolve(__dirname, "../entry/server.tsx"),
@@ -34,8 +33,10 @@ export const build = async () => {
     // 正式编译
     Bun.build({
         entrypoints: [path.resolve(__dirname, "./prodServer.ts")],
-        compile: true,
+        minify: true,
+        target: "bun",
         outdir: "./dist",
+        external: ["*.css"],
         define: {
             "process.env.NODE_ENV": JSON.stringify("production"),
         },

@@ -6,7 +6,7 @@ import { createStaticHandler, createStaticRouter } from "react-router"
 
 
 
-export const render = async (req: Request) => {
+export const render = async (req: Request, serverData?: any) => {
     // 1. 创建处理器
     const { query, dataRoutes } = createStaticHandler(routes)
     
@@ -20,6 +20,6 @@ export const render = async (req: Request) => {
     
     // 4. 创建静态路由
     const router = createStaticRouter(dataRoutes, context)
-    const html = renderToString(<App router={router} />)
+    const html = renderToString(<App router={router} serverData={serverData}/>)
     return html;
 }

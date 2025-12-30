@@ -1,7 +1,7 @@
 import { getApiRouteModules } from "./apiRoutes";
 import fs from "node:fs";
 import { matchRoutes } from "react-router";
-import path from "node:path";
+import packageJson from "../package.json";
 
 // 用户代码
 const pageRoutes = (await import("@/router/routes"!)).default as WildPigRouteObject[];
@@ -13,7 +13,6 @@ const port = env.PORT || 3000;
 const hostname = env.HOST || env.HOSTNAME || "localhost";
 
 const getPackageInfo = async () => {
-    const packageJson = await Bun.file(path.resolve(__dirname, "../package.json")).json();
     return packageJson;
 }
 const packageInfo = await getPackageInfo();
@@ -31,7 +30,7 @@ console.log(chalk.blue.bgGreen(`         🐗 WildPig version ${packageInfo?.ver
 console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
 console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
 console.log(chalk.green("💻 Wildpig is Running in production mode."));
-console.log(chalk.green(`🔗 Click to debug in Browser: http://${hostname}:${port}`));
+console.log(chalk.green(`🔗 Click to play in Browser: http://localhost:${port}`));
 }
 
 
@@ -39,7 +38,7 @@ console.log(chalk.green(`🔗 Click to debug in Browser: http://${hostname}:${po
 export const startServer = async () => {
     // 确保重启后可以重新拿到路由
     const apiModules = await getApiRouteModules("prod") as any;
-    return Bun.serve({
+    const server = Bun.serve({
         port,
         hostname,
         routes:{
@@ -51,7 +50,11 @@ export const startServer = async () => {
                     const filepath = "./client" + url.pathname;
                     // 检查文件是否存在
                     if(fs.existsSync(filepath) && fs.statSync(filepath).isFile()){
-                        return new Response(Bun.file(filepath));
+                        return new Response(Bun.file(filepath), {
+                            headers: {
+                                "Cache-Control": "public, max-age=864000" // 10 天缓存
+                            }
+                        });
                     }
                     // 文件不存在
                     return new Response("Not Found", {status: 404});
@@ -91,7 +94,7 @@ export const startServer = async () => {
                 // 2. 获取渲染函数
                 const { render } = await import("../entry/server"!);
                 // 3. 获取应用程序 HTML
-                const appHtml = await render(request)
+                const appHtml = await render(request, serverData);
 
                 // 4. 注入渲染后的应用程序 HTML 到模板中。
                 const html = template
@@ -109,9 +112,9 @@ export const startServer = async () => {
         },
         development: false,
         
-    })
+    });
+    afterStart();
+    return server;
 }
 
-
-startServer();
-afterStart();
+export const wildpigServer = await startServer();

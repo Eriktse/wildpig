@@ -1,6 +1,6 @@
 {
   "name": "wildpig",
-  "version": "1.5.0",
+  "version": "1.5.10",
   "author": "eriktse",
   "type": "module",
   "bin": {
@@ -30,6 +30,7 @@
   "scripts": {
     "dev": "wildpig dev",
     "build": "wildpig build",
-    "start": "wildpig start"
+    "start": "wildpig start",
+    "local-publish": "yalc publish"
   }
 }

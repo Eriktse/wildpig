@@ -31,7 +31,7 @@ const viteHandler = (apiModules: any) => async (request: Request) => {
         // 没有匹配的route，说明是一些资源什么的
         const viteURL = new URL(request.url);
         viteURL.port = viteServer.config.server.port.toString();
-        console.log("转发请求：" + viteURL.toString());
+        // console.log("转发请求：" + viteURL.toString());
         const response = await fetch(viteURL.toString(), {
             method: request.method,
             headers: request.headers,
@@ -75,7 +75,7 @@ const viteHandler = (apiModules: any) => async (request: Request) => {
     // 2. 获取渲染函数
     const { render } = await viteServer.ssrLoadModule('/node_modules/wildpig/entry/server.tsx')
     // 3. 获取应用程序 HTML
-    const appHtml = await render(request)
+    const appHtml = await render(request, serverData)
 
     // 4. 注入渲染后的应用程序 HTML 到模板中。
     const html = template
@@ -98,6 +98,22 @@ const getPackageInfo = async () => {
 }
 const packageInfo = await getPackageInfo();
 
+export const startServer = async () => {
+    // 确保重启后可以重新拿到路由
+    const apiModules = await getApiRouteModules("dev") as any;
+    const server = Bun.serve({
+        port,
+        hostname,
+        routes:{
+            ...apiModules,
+            "/*": viteHandler(apiModules),
+        },
+        development: true,
+    })
+    afterStart();
+    return server;
+}
+
 /** 启动后的描述性文字 */
 const afterStart = () => {
 // 启动后的文字
@@ -112,23 +128,7 @@ console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
 console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
 console.log(chalk.yellow("💻 Wildpig is Running in development mode."));
 console.log(chalk.green("⚡ Vite server is running on port " + viteServer.config.server?.port));
-console.log(chalk.green(`🔗 Click to debug in Browser: http://${hostname}:${port}`));
+console.log(chalk.green(`🔗 Click to debug in Browser: http://localhost:${port}`));
 }
 
-export const startServer = async () => {
-    // 确保重启后可以重新拿到路由
-    const apiModules = await getApiRouteModules("dev") as any;
-    console.log(apiModules)
-    const server = Bun.serve({
-        port,
-        hostname,
-        routes:{
-            ...apiModules,
-            "/*": viteHandler(apiModules),
-        },
-        development: true,
-    })
-    afterStart();
-    return server;
-}
-startServer();
+export const wildpigServer = await startServer();
