@@ -2,15 +2,11 @@ import { getApiRouteModules } from "./apiRoutes";
 import fs from "node:fs";
 import { matchRoutes } from "react-router";
 import packageJson from "../package.json";
-
-// 用户代码
-const pageRoutes = (await import("@/router/routes"!)).default as WildPigRouteObject[];
-import chalk from "chalk";
-import { WildPigRouteObject } from "router/types";
-
+import { ICreateServerOptions } from "./types";
+import { routes } from "../router";
 const env = process.env;
-const port = env.PORT || 3000;
-const hostname = env.HOST || env.HOSTNAME || "localhost";
+// 用户代码（动态导入）
+import chalk from "chalk";
 
 const getPackageInfo = async () => {
     return packageJson;
@@ -18,7 +14,7 @@ const getPackageInfo = async () => {
 const packageInfo = await getPackageInfo();
 
 /** 启动后的描述性文字 */
-const afterStart = () => {
+const afterStart = (options: ICreateServerOptions) => {
 // 启动后的文字
 console.log(` __        __ _  _      _   ____   _        
  \\ \\      / /(_)| |  __| | |  _ \\ (_)  __ _ 
@@ -30,17 +26,21 @@ console.log(chalk.blue.bgGreen(`         🐗 WildPig version ${packageInfo?.ver
 console.log(chalk.green("          Strong & Fast Fullstack Framework\n"));
 console.log(chalk.green("✨ WildPig is running on port " + env.PORT || 3000));
 console.log(chalk.green("💻 Wildpig is Running in production mode."));
-console.log(chalk.green(`🔗 Click to play in Browser: http://localhost:${port}`));
+console.log(chalk.green(`🔗 Click to play in Browser: http://localhost:${options.port}`));
 }
 
+export default async (options?: ICreateServerOptions) => {
+    options = Object.assign({
+        port: 3000,
+        host: "0.0.0.0",
+        showInfo: true,
+    }, options || {});
 
-
-export const startServer = async () => {
-    // 确保重启后可以重新拿到路由
+    
     const apiModules = await getApiRouteModules("prod") as any;
     const server = Bun.serve({
-        port,
-        hostname,
+        port: options.port,
+        hostname: options.host,
         routes:{
             ...apiModules,
             "/*": async (request: Request) => {
@@ -61,7 +61,7 @@ export const startServer = async () => {
                 }
 
                 // 请求服务端数据
-                const matches = matchRoutes(pageRoutes, url.pathname);
+                const matches = matchRoutes(routes, url.pathname);
                 if(!matches)return new Response("Not Found", {status: 404});
 
                 const matchRoute = matches.at(-1)!;
@@ -84,7 +84,9 @@ export const startServer = async () => {
                     });
                     serverRequest.headers.set("wildpig-server-data-api", serverDataApi);
                     const pathname = serverDataApi.split("?")[0]; // 获取路径
-                    const serverData = await apiModules[pathname].GET(serverRequest).then((r: Response) => r.json());
+                    const handler = apiModules?.[pathname]?.GET;
+                    if(!handler)return undefined; // 没有对应的handler
+                    const serverData = await handler(serverRequest).then((r: Response) => r.json());
                     return serverData;
                 };
                 let serverData = await getServerData();
@@ -111,10 +113,7 @@ export const startServer = async () => {
             },
         },
         development: false,
-        
     });
-    afterStart();
+    if(options.showInfo)afterStart(options);
     return server;
 }
-
-export const wildpigServer = await startServer();

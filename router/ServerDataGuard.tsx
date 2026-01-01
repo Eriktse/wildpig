@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
-import pageRoutes from "@/router/routes";
 import { serverDataStore } from "../store/serverDataStore";
+import { routes } from ".";
 
 export const ServerDataGuard = () => {
     const location = useLocation();
@@ -11,7 +11,7 @@ export const ServerDataGuard = () => {
         serverDataStore.set(undefined);
 
         const pathname = location.pathname;
-        const matches = matchRoutes(pageRoutes, pathname);
+        const matches = matchRoutes(routes, pathname);
         const lastMatch = matches?.at(-1);
         if(!lastMatch) {
             // 404
@@ -34,7 +34,6 @@ export const ServerDataGuard = () => {
             if(serverDataApi.includes(key + "="))continue;
             serverDataApi += (serverDataApi.includes("?") ? "&" : "?") + key + "=" + value;
         }
-        
 
         fetch(serverDataApi).then(res => res.json()).then(data => {
             serverDataStore.set(data);

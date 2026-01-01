@@ -1,11 +1,9 @@
 
-let wildpigServer: Bun.Server<undefined>;
-if( process.env.NODE_ENV !== 'production') {
-    wildpigServer = await import("./scripts/devServer") as any;
-}else{
-    wildpigServer = await import("./scripts/prodServer") as any;
-}
+import { build } from "./scripts/build";
+import { createServer } from "./scripts/server";
 
-export default { 
-    wildpigServer
-}
+
+export { 
+    createServer,
+    build
+};

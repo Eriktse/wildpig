@@ -3,7 +3,7 @@ import path from "node:path";
 const __dirname = import.meta.dirname;
 
 
-import { middleware } from "@/api/middleware";
+const middleware = (await import("@/endpoints/middleware"!)).middleware;
 
 const getFilePaths = (dir: string) => {
     const res: string[] = [];
@@ -25,14 +25,14 @@ const makeDynamicRoute = (route: string) => route.replaceAll(/\[([^\]]*)\]/g, ':
 
 export const makeApiRoutePathObj = () => {
     // 扫描用户代码路径
-    const apiDir = "./src/api";
+    const apiDir = "./src/endpoints";
     const apiPaths = getFilePaths(apiDir);
     const result: Record<string, string> = {};
 
     for(const apiPath of apiPaths) {
-        const importPath = apiPath.replace("./src/api", "#/src/api");
+        const importPath = apiPath.replace("./src/endpoints", "@/endpoints");
         if(!apiPath.includes("index.ts")) continue;
-        const route = apiPath.replace("./src/api", "/api").replace("/index.ts", "");
+        const route = apiPath.replace("./src/endpoints", "").replace("/index.ts", "");
         result[route] = importPath.replace(".ts", "");
     }
     return result;
@@ -44,7 +44,7 @@ export const makeApiRoutePathObj = () => {
 export const packageApiRoutes = async () => {
     const apiRoutes = makeApiRoutePathObj();
     let identId = 0;
-    let importsText = `import { middleware } from "@/api/middleware" \n`;
+    let importsText = `import { middleware } from "@/endpoints/middleware" \n`;
     let routesText = "export default {\n";
     for(const route of Object.keys(apiRoutes)) {
         const importPath = apiRoutes[route];

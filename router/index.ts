@@ -1,15 +1,14 @@
-import { createBrowserRouter } from "react-router";
 import { ServerDataGuard } from "./ServerDataGuard";
+import { WildPigRouteObject } from "./types";
 
 // 用户代码
-import pageRoutes from "@/router/routes";
+let pageRoutes: WildPigRouteObject[] = (await import("../../../src/router/routes"!)).default;
 
 
-/** 生成路由器，可用于监听路由变化 */
-export const browserRouter = createBrowserRouter([
+export const routes = [
     {
         path: "/",
         Component: ServerDataGuard,
         children: pageRoutes,
     },
-]);
+] as WildPigRouteObject[];
