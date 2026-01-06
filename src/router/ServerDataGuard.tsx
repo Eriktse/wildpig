@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
 import { serverDataStore } from "../store/serverDataStore";
-import { routes } from ".";
+import { pageRoutes } from "./pageRoutes";
 
 export const ServerDataGuard = () => {
     const location = useLocation();
@@ -11,7 +11,7 @@ export const ServerDataGuard = () => {
         serverDataStore.set(undefined);
 
         const pathname = location.pathname;
-        const matches = matchRoutes(routes, pathname);
+        const matches = matchRoutes(pageRoutes, pathname);
         const lastMatch = matches?.at(-1);
         if(!lastMatch) {
             // 404

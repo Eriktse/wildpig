@@ -1,9 +1,9 @@
 import { renderToString } from "react-dom/server"
 import { createStaticHandler, createStaticRouter } from "react-router"
-import { routes } from "../router";
+import routes from "../router";
 
-// 这个文件由Vite加载
-const { App } = await import("../../../src/App"!);
+
+const { App } = await import("../../../../src/App"!);
 
 export const render = async (req: Request, serverData?: any): Promise<string> => {
     // 1. 创建处理器

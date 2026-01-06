@@ -1,9 +1,8 @@
 import { createBrowserRouter } from "react-router";
-import { routes } from "../router";
+import routes from "../router";
 import { hydrateRoot } from "react-dom/client"
 // 这个文件由Vite加载
-const { App } = await import('/src/App'!);
-
+const { App } = await import('../../../../src/App'!);
 
 const render = () => {
     // 获取serverData

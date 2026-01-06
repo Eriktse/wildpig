@@ -1,6 +1,6 @@
 {
   "name": "wildpig",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "author": "eriktse",
   "type": "module",
   "peerDependencies": {
@@ -25,9 +25,7 @@
   ],
   "license": "ISC",
   "scripts": {
-    "dev": "wildpig dev",
-    "build": "wildpig build",
-    "start": "wildpig start",
+    "build": "bun run build.ts",
     "local-publish": "yalc publish"
   }
 }

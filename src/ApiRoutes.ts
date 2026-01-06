@@ -2,8 +2,7 @@ import { readdirSync, statSync, writeFileSync } from "fs";
 import path from "node:path";
 const __dirname = import.meta.dirname;
 
-
-const middleware = (await import("@/endpoints/middleware"!)).middleware;
+const middleware = (await import("../../../src/endpoints/middleware"!)).middleware;
 
 const getFilePaths = (dir: string) => {
     const res: string[] = [];

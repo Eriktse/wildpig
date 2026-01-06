@@ -3,6 +3,4 @@ Dockerfile
 .env.*
 *.log
 node_modules/
-dist/
-src/
 tsconfig.json
