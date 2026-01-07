@@ -32,11 +32,11 @@ export const build = async () => {
     // 正式编译
     await Bun.build({
         entrypoints: [path.resolve(__dirname, "../scripts/prod.ts")],
-        minify: true, // 压缩
+        minify: false, // 压缩
         target: "bun",
         outdir: "./dist",
         format: "esm",
-        external: [],
+        external: ["*.css"],
     });
 
 

@@ -2,7 +2,14 @@ import { createBrowserRouter } from "react-router";
 import routes from "../router";
 import { hydrateRoot } from "react-dom/client"
 // 这个文件由Vite加载
-const { App } = await import('../../../../src/App'!);
+let App: any;
+try{
+    App = (await import('/src/App.tsx'!)).App;
+}catch(e){
+    console.error("导入App失败：", e);
+    throw e;
+}
+
 
 const render = () => {
     // 获取serverData

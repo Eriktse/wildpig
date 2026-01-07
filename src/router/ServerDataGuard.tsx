@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
-import { serverDataStore } from "../store/serverDataStore";
+import { getServerDataStore } from "../store/serverDataStore";
 import { pageRoutes } from "./pageRoutes";
 
 export const ServerDataGuard = () => {
@@ -8,7 +8,7 @@ export const ServerDataGuard = () => {
     const navigate = useNavigate();
     useEffect(() => {
         // serverData清空
-        serverDataStore.set(undefined);
+        // getServerDataStore<any>().set(undefined);
 
         const pathname = location.pathname;
         const matches = matchRoutes(pageRoutes, pathname);
@@ -36,7 +36,7 @@ export const ServerDataGuard = () => {
         }
 
         fetch(serverDataApi).then(res => res.json()).then(data => {
-            serverDataStore.set(data);
+            getServerDataStore<any>().set(data);
             if(data.title){
                 document.title = data.title;
             }
