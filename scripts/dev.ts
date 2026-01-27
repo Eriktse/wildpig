@@ -3,6 +3,7 @@ import path from "node:path";
 import { WildpigServer } from "../src/WildpigServer";
 import chalk from "chalk";
 import { IWildpigConfig, setWildpigConfig } from "../src/config";
+import { wildpigGlobalMap } from "@/utils/server/globalMap";
 
 
 const __dirname = import.meta.dirname;
@@ -27,13 +28,20 @@ try{
     console.error("获取wildpig.config.ts配置文件失败，请检查！", e);
 }
 
+
+
 // 运行初始化代码
 const initEntry = config?.initEntry || "src/index.ts";
-try{
-    await import(("../../../" + initEntry)!);
-    console.log(chalk.green("初始化代码执行成功：", initEntry));
-}catch(e){
-    console.warn("未执行初始化代码，请检查文件是否存在：" + initEntry)
+// 根据全局注册器判断是否已经运行过了
+const isInitialized = wildpigGlobalMap.getItem("__wildpigInitialized");
+if(!isInitialized){
+    try{
+        await import(("../../../" + initEntry)!);
+        console.log(chalk.green("初始化代码执行成功：", initEntry));
+        wildpigGlobalMap.setItem("__wildpigInitialized", true);
+    }catch(e){
+        console.warn("未执行初始化代码，请检查文件是否存在（或存在其他异常）：" + initEntry, e)
+    }
 }
 
 const wildpigServer = new WildpigServer(viteServer);

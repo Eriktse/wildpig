@@ -12,12 +12,10 @@ try{
 
 
 // 运行初始化代码
-const initEntry = config?.initEntry || "src/index.ts";
 try{
-    const initPath = `"../../../${initEntry}`.replace(".ts", "");
-    await import(initPath);
+    await import("../build/import-init");
 }catch(e){
-    console.warn("未执行初始化代码，请检查文件是否存在：" + initEntry);
+    console.warn("未执行初始化代码，请检查文件是否存在。");
 }
 
 
