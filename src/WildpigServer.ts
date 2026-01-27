@@ -50,6 +50,7 @@ export class WildpigServer {
                     return new Response("Not Found", {status: 404});
                 }
             }
+
             // 服务端请求，获取服务端数据
             const routes = this.viteServer ? (await this.viteServer.ssrLoadModule("/node_modules/wildpig/src/router/index.ts"!)).default as WildPigRouteObject[] : (await import("./router/index")).default;
             const matches = matchRoutes(routes, url.pathname);
@@ -121,15 +122,55 @@ export class WildpigServer {
     async createServer () {
         const config = getWildpigConfig();
         const apiModules = await getApiRouteModules(env.NODE_ENV === "development" ? "dev" : "prod");
-        const server = Bun.serve({
+        
+        const server = Bun.serve<{
+            viteWs: WebSocket,
+        }>({
             port: config?.server?.port || 3000,
             hostname: config?.server?.host || "0.0.0.0",
             routes:{
                 ...apiModules,
+                "/__wildpig_hmr": async (req: Request, server: Bun.Server<{viteWs: WebSocket}>) => {
+                    // 获取protocol
+                    const protocol = req.headers.get("sec-websocket-protocol");
+                    const pathname = req.url.split("/")[3];
+                    const viteWs = new WebSocket("ws://localhost:5173/" + pathname, protocol || "");
+                    const success = server.upgrade(req, {data: {viteWs}});
+                    if(!success)return new Response("Upgrade failed", { status: 500 });
+                    return undefined;
+                },
                 "/*": await this.frontHandler(apiModules),
+            },
+            /** 转发vite-hmr的websocket请求 */
+            websocket: {
+                open: (ws) => {
+                    if(ws.data.viteWs){
+                        // 这是hmr的请求，设置中转策略
+                        const viteWs = ws.data.viteWs;
+                        viteWs.onmessage = ev => {
+                            ws.send(ev.data);
+                        }
+                        viteWs.onclose = () => {
+                            ws.close();
+                        }
+                        viteWs.onerror = err => {
+                            ws.close();
+                        }
+                    }
+                },
+                message: (ws, message) => {
+                    // 将客户端消息转发到Vite HMR服务器
+                    const viteWs = ws.data.viteWs;
+                    if(viteWs.readyState === WebSocket.OPEN)viteWs.send(message);
+                },
+                close: (ws) => {
+                    const viteWs = ws.data.viteWs;
+                    if(viteWs)viteWs.close();
+                }
             },
             development: env.NODE_ENV === "development",
         })
+        
         await this.afterStart();
         // 服务器创建好了， 触发afterStartServer回调
         await handleAfterStartServer(server);

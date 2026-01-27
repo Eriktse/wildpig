@@ -1,9 +1,11 @@
-import { renderToString } from "react-dom/server"
+import { renderToReadableStream } from "react-dom/server"
 import { createStaticHandler, createStaticRouter } from "react-router"
 import routes from "../router";
 
 
 const { App } = await import("../../../../src/App"!);
+
+
 
 export const render = async (req: Request, serverData?: any): Promise<string> => {
     // 1. 创建处理器
@@ -19,6 +21,17 @@ export const render = async (req: Request, serverData?: any): Promise<string> =>
     
     // 4. 创建静态路由
     const router = createStaticRouter(dataRoutes, context)
-    const html = renderToString(<App router={router} serverData={serverData}/>)
-    return html;
+    const stream = await renderToReadableStream(<App router={router} serverData={serverData}/>)
+    let result = '';
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done)break;
+        // value是Uint8Array类型，我们需要将其解码为字符串
+        result += decoder.decode(value);
+    }
+
+    return result;
 }

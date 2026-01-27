@@ -1,23 +1,13 @@
-import { createServer as createViteServer } from "vite";
+import { ConfigEnv, createServer as createViteServer, loadConfigFromFile, resolveConfig } from "vite";
 import path from "node:path";
 import { WildpigServer } from "../src/WildpigServer";
 import chalk from "chalk";
 import { IWildpigConfig, setWildpigConfig } from "../src/config";
-import { wildpigGlobalMap } from "@/utils/server/globalMap";
+import { wildpigGlobalMap } from "../src/utils/server/globalMap";
 
 
 const __dirname = import.meta.dirname;
 const __rootdir = path.resolve(__dirname, "../../../");
-
-
-
-// 启动vite server
-const viteServer = await createViteServer({
-    configFile: path.resolve(__rootdir, "./vite.config.ts"),
-});
-await viteServer.listen(viteServer.config.server.port);
-
-
 
 // 加载配置文件
 let config: IWildpigConfig | undefined;
@@ -28,6 +18,38 @@ try{
     console.error("获取wildpig.config.ts配置文件失败，请检查！", e);
 }
 
+
+
+// 启动vite server
+const viteConfig = await loadConfigFromFile(
+    {
+        mode: "development",
+        command: "serve",
+    },
+    path.resolve(__rootdir, "./vite.config.ts")
+);
+if(!viteConfig)throw new Error("获取vite配置文件失败，请检查vite.config.ts文件是否存在！");
+
+// 补充默认配置
+const serverPort = config?.server?.port || 3000;
+const userServerConfig = Object.assign({
+    host: "0.0.0.0",
+    port: 5173,
+    hmr: {
+        port: 5173,
+        // 客户端会向这个端口+路径发送websocket请求，用于hmr
+        clientPort: serverPort,
+        path: "/__wildpig_hmr",
+    },
+}, viteConfig.config.server || {});
+
+const viteServer = await createViteServer({
+    configFile: path.resolve(__rootdir, "./vite.config.ts"),
+    server: userServerConfig,
+    mode: "development",
+    command: "serve",
+});
+await viteServer.listen(userServerConfig.port);
 
 
 // 运行初始化代码

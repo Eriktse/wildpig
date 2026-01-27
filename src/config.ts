@@ -3,7 +3,7 @@ import { wildpigGlobalMap } from "./utils/server/globalMap";
 export interface IWildpigConfig {
     server?: {
         host?: string,
-        port?: number | string,
+        port?: number,
     },
     /**
      * 入口文件，默认为src/index.ts，用户可以在这里编写一些自定义的初始化代码

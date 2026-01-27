@@ -3,8 +3,8 @@ import { build as viteBuild } from "vite";
 import { packageApiRoutes } from "../src/ApiRoutes";
 import { IBuildOptions } from "../src/types";
 import chalk from "chalk";
-import fs from "fs";
-import { getWildpigConfig, IWildpigConfig, setWildpigConfig } from "@/config";
+import { IWildpigConfig, setWildpigConfig } from "../src/config";
+import { makeImportInitFile } from "../src/ImportInit";
 
 const __dirname = import.meta.dirname;
 const __rootdir = path.resolve(__dirname, "../../../"); // 项目根目录
@@ -21,14 +21,10 @@ const prebuild = async (options?: IBuildOptions) => {
     
     // 打包api路由
     promises.push(packageApiRoutes());
+
+    // 生成初始化文件的import代码
+    makeImportInitFile();
     
-    // 生成一个仅导入初始化代码的文件
-    const config = getWildpigConfig();
-    if(!config) throw new Error("获取wildpig.config.ts配置文件失败。");
-
-    const initEntryPath = "../../../" + (config.initEntry || "src/index.ts");
-    fs.writeFileSync(path.resolve(__dirname, "../build/import-init.ts"), `//临时文件，仅用于打包时静态导入\n import "${initEntryPath}"\nexport default undefined;`);
-
     await Promise.all(promises);
 };
 
@@ -63,8 +59,8 @@ export const build = async () => {
     });
 
 
-    console.log(chalk.green("🐗 [Wildpig] Build done, time:"), chalk.blue(performance.now() - st, "ms"));
-    console.log(chalk.green(`✨ [Wildpig] Start by command:`), chalk.blue(`bun run start`));
+    console.log(chalk.green("🐗 [Wildpig] 构建完毕，总耗时："), chalk.blue(performance.now() - st, "ms"));
+    console.log(chalk.green(`✨ [Wildpig] 用这条命令轻松启动：`), chalk.blue(`bun run start`));
 }
 
 build();
