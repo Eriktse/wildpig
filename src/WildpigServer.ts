@@ -29,6 +29,7 @@ export class WildpigServer {
             if(url.pathname.includes(".") || url.pathname.startsWith("/@") || url.pathname.startsWith("/assets")){
                 if(this.viteServer){// 交给vite
                     const viteURL = new URL(request.url);
+                    viteURL.host = "localhost";
                     viteURL.port = this.viteServer.config.server.port.toString();
                     const response = await fetch(viteURL.toString(), {
                         method: request.method,
@@ -134,7 +135,7 @@ export class WildpigServer {
                     // 获取protocol
                     const protocol = req.headers.get("sec-websocket-protocol");
                     const pathname = req.url.split("/")[3];
-                    const viteWs = new WebSocket("ws://localhost:5173/" + pathname, protocol || "");
+                    const viteWs = new WebSocket("ws://localhost:" + (this.viteServer?.config.server?.port || 5173) + "/" + pathname, protocol || "");
                     const success = server.upgrade(req, {data: {viteWs}});
                     if(!success)return new Response("Upgrade failed", { status: 500 });
                     return undefined;

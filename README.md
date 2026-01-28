@@ -19,3 +19,5 @@
 # 启动项目
 
 https://github.com/Eriktse/wildpig-starter
+
+文档等待完善吧，作者平时还要上班，有空时搞搞。
