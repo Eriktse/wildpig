@@ -15,7 +15,7 @@ export const wildpigDynamicHmrClientPort = () => {
             const portMatch = host.match(/:(\d+)$/);
             const port = portMatch ? portMatch[1] : undefined;
             const originalPort = (server.config.server?.hmr as HmrOptions)?.clientPort || server.config.server?.port;
-            
+
             if(originalPort && port && req.url?.includes("/@vite/client")){
                 let buffer: Buffer[] = [];
 
@@ -33,7 +33,7 @@ export const wildpigDynamicHmrClientPort = () => {
                     const content = Buffer.concat(buffer).toString('utf-8');
                     const newContent = content
                         .replace(`const hmrPort = ${originalPort};`, `const hmrPort = ${port};`)
-                        .replace(`const directSocketHost = "localhost:${originalPort}/";`, `const directSocketHost = "localhost:${port}/";`);
+                        .replace(`const hmrPort = "${originalPort}";`, `const hmrPort = "${port}";`)
                     const newContentBuffer = Buffer.from(newContent, 'utf-8');
                     
                     // 设置正确的 Content-Length（使用新内容的长度）
