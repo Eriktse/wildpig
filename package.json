@@ -1,6 +1,6 @@
 {
   "name": "wildpig",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "author": "eriktse",
   "type": "module",
   "peerDependencies": {

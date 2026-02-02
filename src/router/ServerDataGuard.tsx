@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { matchRoutes, Outlet, useLocation, useNavigate } from "react-router"
 import { getServerDataStore } from "../store/serverDataStore";
 import { pageRoutes } from "./pageRoutes";
@@ -6,9 +6,13 @@ import { pageRoutes } from "./pageRoutes";
 export const ServerDataGuard = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    // 是否是第一次加载，跳过首次的服务端数据获取，因为这次是直接由服务端给的
+    const isFirst = useRef(true);
+
     useEffect(() => {
-        // serverData清空
-        // getServerDataStore<any>().set(undefined);
+        if(isFirst.current)return;
+        isFirst.current = false;
 
         const pathname = location.pathname;
         const matches = matchRoutes(pageRoutes, pathname);
