@@ -11,8 +11,10 @@ export const ServerDataGuard = () => {
     const isFirst = useRef(true);
 
     useEffect(() => {
-        if(isFirst.current)return;
-        isFirst.current = false;
+        if(isFirst.current){
+            isFirst.current = false;
+            return;
+        }
 
         const pathname = location.pathname;
         const matches = matchRoutes(pageRoutes, pathname);
